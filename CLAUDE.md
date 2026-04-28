@@ -35,7 +35,7 @@ stepi-before-log/
 - **backend**: Docker 컨테이너. 호스트 **127.0.0.1:4000**에만 바인딩(외부 직노출 금지). 프로덕션 URL `https://stepilog.donkey.ai.kr`은 같은 호스트의 nginx가 `127.0.0.1:4000`으로 프록시. TLS는 Let's Encrypt(certbot --nginx)로 발급/갱신.
 - **database**: Docker 컨테이너. 호스트 **127.0.0.1:5432**에만 바인딩(로컬 GUI 툴용, 외부 직노출 금지).
 - backend ↔ database는 Docker 네트워크 내부에서 서비스명(`database`)으로 통신.
-- frontend → backend는 **Next.js Route Handler 프록시**(`/api/*`)를 거쳐 호출. 프록시가 서버 사이드에서 API 키를 헤더에 붙인다.
+- frontend → backend는 **브라우저에서 직접 fetch** (`NEXT_PUBLIC_BACKEND_URL` 사용). API 키도 클라이언트가 헤더로 붙임 (`NEXT_PUBLIC_API_KEY`). 옛 Next.js Route Handler 프록시는 제거됨 — Vercel에서 fetch method 손실 이슈가 있었고 이 도구의 보안 요구를 정당화 못 함.
 - backend의 **CORS는 모든 origin 허용** — API 키 헤더로 인증을 대체.
 - **API 문서**: Swagger UI는 `/docs`(`https://stepilog.donkey.ai.kr/docs`), OpenAPI JSON은 `/docs.json`. 인증 불필요.
 

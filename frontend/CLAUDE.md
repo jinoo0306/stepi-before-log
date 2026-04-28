@@ -18,18 +18,19 @@ npm run dev
 
 기본 포트 **3000**. 브라우저에서 `http://localhost:3000`.
 
-## 백엔드 연동 (중요)
+## 백엔드 연동
 
-- 클라이언트 코드는 backend를 직접 호출하지 않는다. 항상 **Next.js Route Handler 프록시**(`/api/*`)를 호출한다.
-- 프록시는 `src/app/api/[...path]/route.ts`에서 모든 메서드를 받아 backend로 forward한다.
-- 프록시가 서버 측 환경 변수에서 `API_KEY`를 읽어 `X-API-Key` 헤더로 붙인다.
-- 따라서 **API 키는 클라이언트 번들에 절대 들어가지 않는다** (`NEXT_PUBLIC_*` 사용 금지).
+- 브라우저가 backend를 **직접 호출**한다 (`src/lib/api.ts` 의 `call()` 한 군데에서 fetch).
+- backend의 CORS는 모든 origin 허용 (`backend/src/index.ts` 의 `app.use(cors())`).
+- 인증은 `X-API-Key` 헤더 — fetch 호출부에서 `NEXT_PUBLIC_API_KEY` 값을 헤더로 붙인다.
+- **API 키는 클라이언트 번들에 노출된다.** 사내 채용 타이머 도구 수준의 보안 모델 (PII/금전 노출 없음). 진짜 비밀이 필요해지면 별도 인증으로 교체 필요.
+- 옛 Next.js Route Handler 프록시(`src/app/api/[...path]/route.ts`)는 제거됨 — Vercel 런타임에서 fetch의 method가 손실되는 이슈가 있었고, 이 도구의 보안 요구가 프록시 비용을 정당화하지 않음.
 
-환경 변수 (모두 서버 측 전용 — 클라이언트 번들에 노출되지 않음):
-- `BACKEND_URL` — 로컬: `http://localhost:4000`, 프로덕션: `https://stepilog.donkey.ai.kr`
-- `API_KEY` — 예: `jinoo0306`. Vercel에서는 Project Settings → Environment Variables에 등록.
+환경 변수 (둘 다 `NEXT_PUBLIC_` 접두어 — 클라이언트 번들에 의도적으로 포함됨):
+- `NEXT_PUBLIC_BACKEND_URL` — 로컬 `http://localhost:4000`, 프로덕션 `https://stepilog.donkey.ai.kr`
+- `NEXT_PUBLIC_API_KEY` — 예 `jinoo0306`. Vercel Project Settings → Environment Variables 에 등록.
 
-env 파일 규칙 — frontend/ 안에 세 개:
+env 파일 규칙 — `frontend/` 안에 세 개:
 - `.env.example` — 키만 있는 템플릿 (커밋 ✅)
 - `.env.local`  — 로컬 개발 시 실제 값 (커밋 ❌, gitignore). Next.js가 자동 로드.
 - `.env.vercel` — Vercel 대시보드에 등록할 값 모음 (커밋 ❌, gitignore, 사람용 메모/가이드. Next.js는 자동 로드 안 함)
@@ -66,5 +67,5 @@ env 파일 규칙 — frontend/ 안에 세 개:
 
 ## 작업 규칙
 
-- 새 API 엔드포인트는 backend에 먼저 만들고, 프록시는 catch-all이라 자동 forward된다.
+- 새 API 엔드포인트는 backend에 먼저 만들고, 프론트는 `src/lib/api.ts` 에 메서드 한 줄 추가하면 끝.
 - 클라이언트에서 시간 표시: 초 단위 누적은 `setInterval`로 1초마다 업데이트.

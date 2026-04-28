@@ -18,13 +18,22 @@ export interface TableRowsResponse {
   rows: Record<string, unknown>[];
 }
 
+// 브라우저 → backend 직접 호출. backend의 CORS는 모든 origin 허용이며
+// API_KEY는 사내 도구 수준의 단순 헤더 키 — 클라이언트 노출을 받아들인다.
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "";
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY ?? "";
+
 async function call<T>(
   path: string,
   init?: RequestInit & { json?: unknown }
 ): Promise<T> {
+  if (!BACKEND_URL) {
+    throw new Error("NEXT_PUBLIC_BACKEND_URL 이 설정되지 않았습니다.");
+  }
   const headers = new Headers(init?.headers);
   if (init?.json !== undefined) headers.set("content-type", "application/json");
-  const res = await fetch(`/api${path}`, {
+  if (API_KEY) headers.set("x-api-key", API_KEY);
+  const res = await fetch(`${BACKEND_URL}/api${path}`, {
     ...init,
     headers,
     body: init?.json !== undefined ? JSON.stringify(init.json) : init?.body,
