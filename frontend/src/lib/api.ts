@@ -81,6 +81,8 @@ export const api = {
     call<TaskLog>(`/task-logs/${id}/pause`, { method: "PATCH" }),
   resumeTaskLog: (id: number) =>
     call<TaskLog>(`/task-logs/${id}/resume`, { method: "PATCH" }),
+  deleteTaskLog: (id: number) =>
+    call<void>(`/task-logs/${id}`, { method: "DELETE" }),
 
   // tables (workbench)
   listTables: () => call<TableInfo[]>("/tables"),

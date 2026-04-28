@@ -92,7 +92,7 @@ export function HandlerSelect({
       </div>
 
       {adding && (
-        <div className="rounded-md border border-slate-200 bg-slate-50 p-3 space-y-2">
+        <div className="rounded-md border border-navy-200 bg-navy-50 p-3 space-y-2">
           <label className="field-label block">새 담당자 이름</label>
           <div className="flex gap-2">
             <input

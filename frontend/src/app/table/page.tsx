@@ -217,15 +217,15 @@ export default function TableWorkbenchPage() {
         <div>
           <Link
             href="/"
-            className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-slate-900"
+            className="inline-flex items-center gap-1 text-xs font-medium text-navy-500 hover:text-navy-900"
           >
             <ArrowLeft size={12} />
             메인으로
           </Link>
-          <h1 className="mt-1 text-2xl font-semibold text-slate-900 sm:text-3xl">
+          <h1 className="mt-1 text-2xl font-semibold text-navy-900 sm:text-3xl">
             데이터 워크벤치
           </h1>
-          <p className="mt-1 text-sm text-slate-600">
+          <p className="mt-1 text-sm text-navy-600">
             DB의 모든 테이블을 조회·편집하고 CSV / XLSX로 내보낼 수 있습니다.
           </p>
         </div>
@@ -253,13 +253,13 @@ export default function TableWorkbenchPage() {
 
       <div className="grid gap-4 md:grid-cols-[240px_minmax(0,1fr)]">
         <aside className="card p-2">
-          <p className="px-3 py-2 text-xs font-medium uppercase tracking-wider text-slate-500">
+          <p className="px-3 py-2 text-xs font-medium uppercase tracking-wider text-navy-500">
             테이블 ({tables.length})
           </p>
           {loadingTables && tables.length === 0 ? (
-            <p className="px-3 py-4 text-sm text-slate-500">불러오는 중...</p>
+            <p className="px-3 py-4 text-sm text-navy-500">불러오는 중...</p>
           ) : tables.length === 0 ? (
-            <p className="px-3 py-4 text-sm text-slate-500">
+            <p className="px-3 py-4 text-sm text-navy-500">
               표시할 테이블이 없습니다.
             </p>
           ) : (
@@ -272,8 +272,8 @@ export default function TableWorkbenchPage() {
                     className={cn(
                       "flex w-full items-center justify-between gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors",
                       selected === t.name
-                        ? "bg-slate-900 text-white"
-                        : "text-slate-700 hover:bg-slate-100"
+                        ? "bg-navy-900 text-white"
+                        : "text-navy-700 hover:bg-navy-100"
                     )}
                   >
                     <span className="flex items-center gap-2 truncate font-mono">
@@ -285,7 +285,7 @@ export default function TableWorkbenchPage() {
                         "shrink-0 rounded px-1.5 py-0.5 text-xs tabular-nums",
                         selected === t.name
                           ? "bg-white/15 text-white"
-                          : "bg-slate-100 text-slate-600"
+                          : "bg-navy-100 text-navy-600"
                       )}
                     >
                       {t.row_count.toLocaleString()}
@@ -298,13 +298,13 @@ export default function TableWorkbenchPage() {
         </aside>
 
         <section className="card overflow-hidden">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-5 py-3">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-navy-200 px-5 py-3">
             <div className="min-w-0">
-              <p className="font-mono text-sm font-semibold text-slate-900">
+              <p className="font-mono text-sm font-semibold text-navy-900">
                 {selected ?? "—"}
               </p>
               {data && (
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-navy-500">
                   {visibleCount.toLocaleString()} / {totalCount.toLocaleString()} rows
                   {filterCount > 0 && ` · 필터 ${filterCount}`}
                   {sortCol && ` · 정렬 ${sortCol} ${sortDir}`}
@@ -356,19 +356,19 @@ export default function TableWorkbenchPage() {
 
           <div className="overflow-x-auto">
             {loadingRows ? (
-              <p className="p-8 text-center text-sm text-slate-500">불러오는 중...</p>
+              <p className="p-8 text-center text-sm text-navy-500">불러오는 중...</p>
             ) : !data ? (
-              <p className="p-8 text-center text-sm text-slate-500">
+              <p className="p-8 text-center text-sm text-navy-500">
                 테이블을 선택하세요.
               </p>
             ) : (
               <table className="w-full border-collapse text-sm">
-                <thead className="sticky top-0 bg-slate-50">
+                <thead className="sticky top-0 bg-navy-50">
                   <tr>
                     {data.columns.map((c) => (
                       <th
                         key={c.name}
-                        className="border-b border-slate-200 px-3 py-2 text-left font-medium text-slate-700"
+                        className="border-b border-navy-200 px-3 py-2 text-left font-medium text-navy-700"
                       >
                         <button
                           type="button"
@@ -379,12 +379,12 @@ export default function TableWorkbenchPage() {
                             <div className="font-mono text-xs">
                               {c.name}
                               {c.name === data.primary_key && (
-                                <span className="ml-1 text-[9px] text-slate-400">
+                                <span className="ml-1 text-[9px] text-navy-400">
                                   PK
                                 </span>
                               )}
                             </div>
-                            <div className="text-[10px] uppercase tracking-wide text-slate-400">
+                            <div className="text-[10px] uppercase tracking-wide text-navy-400">
                               {c.data_type}
                             </div>
                           </span>
@@ -396,7 +396,7 @@ export default function TableWorkbenchPage() {
                       </th>
                     ))}
                     {data.primary_key !== null && (
-                      <th className="sticky right-0 z-10 border-b border-l border-slate-200 bg-slate-50 px-3 py-2 text-right text-xs font-medium text-slate-500">
+                      <th className="sticky right-0 z-10 border-b border-l border-navy-200 bg-navy-50 px-3 py-2 text-right text-xs font-medium text-navy-500">
                         조작
                       </th>
                     )}
@@ -405,12 +405,12 @@ export default function TableWorkbenchPage() {
                     {data.columns.map((c) => (
                       <th
                         key={c.name}
-                        className="border-b border-slate-200 bg-white px-2 py-1.5"
+                        className="border-b border-navy-200 bg-white px-2 py-1.5"
                       >
                         <input
                           type="text"
                           placeholder="필터..."
-                          className="w-full rounded border border-slate-200 px-2 py-1 text-xs text-slate-700 placeholder:text-slate-400 focus:border-slate-900 focus:outline-none"
+                          className="w-full rounded border border-navy-200 px-2 py-1 text-xs text-navy-700 placeholder:text-navy-400 focus:border-navy-900 focus:outline-none"
                           value={filters[c.name] ?? ""}
                           onChange={(e) =>
                             setFilters((p) => ({ ...p, [c.name]: e.target.value }))
@@ -419,7 +419,7 @@ export default function TableWorkbenchPage() {
                       </th>
                     ))}
                     {data.primary_key !== null && (
-                      <th className="sticky right-0 z-10 border-b border-l border-slate-200 bg-white px-3 py-1.5"></th>
+                      <th className="sticky right-0 z-10 border-b border-l border-navy-200 bg-white px-3 py-1.5"></th>
                     )}
                   </tr>
                 </thead>
@@ -430,7 +430,7 @@ export default function TableWorkbenchPage() {
                         colSpan={
                           data.columns.length + (data.primary_key !== null ? 1 : 0)
                         }
-                        className="p-8 text-center text-sm text-slate-500"
+                        className="p-8 text-center text-sm text-navy-500"
                       >
                         {totalCount === 0
                           ? "데이터가 없습니다."
@@ -445,18 +445,18 @@ export default function TableWorkbenchPage() {
                       return (
                         <tr
                           key={pk + ":" + i}
-                          className="border-b border-slate-100 last:border-0 hover:bg-slate-50"
+                          className="border-b border-navy-100 last:border-0 hover:bg-navy-50"
                         >
                           {data.columns.map((c) => (
                             <td
                               key={c.name}
-                              className="px-3 py-2 align-top font-mono text-xs text-slate-800"
+                              className="px-3 py-2 align-top font-mono text-xs text-navy-800"
                             >
                               <Cell value={row[c.name]} />
                             </td>
                           ))}
                           {data.primary_key !== null && (
-                            <td className="sticky right-0 z-10 border-l border-slate-100 bg-white px-2 py-1.5 text-right hover:bg-slate-50">
+                            <td className="sticky right-0 z-10 border-l border-navy-100 bg-white px-2 py-1.5 text-right hover:bg-navy-50">
                               <div className="flex justify-end gap-1">
                                 <button
                                   type="button"
@@ -509,7 +509,7 @@ export default function TableWorkbenchPage() {
 
 function Cell({ value }: { value: unknown }) {
   if (value === null || value === undefined) {
-    return <span className="text-slate-400">NULL</span>;
+    return <span className="text-navy-400">NULL</span>;
   }
   if (typeof value === "boolean") return <span>{value ? "true" : "false"}</span>;
   if (typeof value === "object") {
@@ -524,10 +524,10 @@ function Cell({ value }: { value: unknown }) {
 
 function SortIcon({ active, dir }: { active: boolean; dir: SortDir }) {
   if (!active || !dir)
-    return <ArrowUpDown size={12} className="text-slate-300 group-hover:text-slate-500" />;
+    return <ArrowUpDown size={12} className="text-navy-300 group-hover:text-navy-500" />;
   return dir === "asc" ? (
-    <ArrowUp size={12} className="text-slate-700" />
+    <ArrowUp size={12} className="text-navy-700" />
   ) : (
-    <ArrowDown size={12} className="text-slate-700" />
+    <ArrowDown size={12} className="text-navy-700" />
   );
 }

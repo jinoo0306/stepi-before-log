@@ -80,13 +80,13 @@ export function HandlerManagerDialog({
           이름 수정과 삭제가 가능합니다. 작업 기록이 있는 담당자는 삭제할 수 없습니다.
         </DialogDescription>
 
-        <div className="mt-4 max-h-80 overflow-y-auto rounded-md border border-slate-200">
+        <div className="mt-4 max-h-80 overflow-y-auto rounded-md border border-navy-200">
           {handlers.length === 0 && (
-            <p className="p-4 text-center text-sm text-slate-500">
+            <p className="p-4 text-center text-sm text-navy-500">
               담당자가 없습니다.
             </p>
           )}
-          <ul className="divide-y divide-slate-200">
+          <ul className="divide-y divide-navy-200">
             {handlers.map((h) => (
               <li key={h.id} className="flex items-center gap-2 p-3">
                 {editingId === h.id ? (
@@ -106,7 +106,7 @@ export function HandlerManagerDialog({
                     />
                     <button
                       type="button"
-                      className="btn-ghost !text-slate-900"
+                      className="btn-ghost !text-navy-900"
                       onClick={() => saveEdit(h.id)}
                       disabled={busy}
                       aria-label="저장"
@@ -127,7 +127,7 @@ export function HandlerManagerDialog({
                   </>
                 ) : (
                   <>
-                    <span className="flex-1 text-sm text-slate-900">{h.name}</span>
+                    <span className="flex-1 text-sm text-navy-900">{h.name}</span>
                     <button
                       type="button"
                       className="btn-ghost"

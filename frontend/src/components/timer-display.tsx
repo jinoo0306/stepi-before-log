@@ -38,7 +38,7 @@ export function LiveTimer({
   return (
     <span
       className={`font-mono tabular-nums text-2xl font-semibold ${
-        pausedAt ? "text-slate-400" : "text-slate-900"
+        pausedAt ? "text-navy-400" : "text-navy-900"
       }`}
     >
       {formatDuration(elapsed)}

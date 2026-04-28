@@ -180,6 +180,25 @@ router.patch("/:id/stop", async (req, res, next) => {
   }
 });
 
+// DELETE /api/task-logs/:id — 기록을 영구 삭제 (자식이 참조 중이면 자식 parent_log_id는 NULL로 풀린다)
+router.delete("/:id", async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0) {
+      res.status(400).json({ error: "invalid id" });
+      return;
+    }
+    const r = await pool.query(`DELETE FROM task_logs WHERE id = $1`, [id]);
+    if (r.rowCount === 0) {
+      res.status(404).json({ error: "기록을 찾을 수 없습니다." });
+      return;
+    }
+    res.status(204).end();
+  } catch (e) {
+    next(e);
+  }
+});
+
 // PATCH /api/task-logs/:id/pause — 진행중이고 일시정지 상태가 아닐 때만 가능
 router.patch("/:id/pause", async (req, res, next) => {
   try {

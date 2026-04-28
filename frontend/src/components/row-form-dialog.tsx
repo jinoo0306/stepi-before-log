@@ -174,10 +174,10 @@ export function RowFormDialog({
                     className="flex items-center justify-between mb-1.5"
                   >
                     <span className="text-sm">
-                      <span className="font-mono font-medium text-slate-900">
+                      <span className="font-mono font-medium text-navy-900">
                         {c.name}
                       </span>
-                      <span className="ml-2 text-[10px] uppercase tracking-wide text-slate-500">
+                      <span className="ml-2 text-[10px] uppercase tracking-wide text-navy-500">
                         {c.data_type}
                         {isPk && " · PK"}
                         {!c.is_nullable && !isPk && " · NOT NULL"}
@@ -185,7 +185,7 @@ export function RowFormDialog({
                       </span>
                     </span>
                     {c.is_nullable && !readOnly && (
-                      <label className="flex items-center gap-1.5 text-xs text-slate-600">
+                      <label className="flex items-center gap-1.5 text-xs text-navy-600">
                         <input
                           type="checkbox"
                           className="h-3.5 w-3.5"
@@ -228,7 +228,7 @@ export function RowFormDialog({
             </p>
           )}
 
-          <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
+          <div className="flex justify-end gap-2 pt-2 border-t border-navy-200">
             <button
               type="button"
               className="btn-secondary"

@@ -65,8 +65,8 @@ export function CompletedList({
     <section>
       <header className="mb-4 flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">완료 내역</h2>
-          <p className="text-sm text-slate-600">
+          <h2 className="text-lg font-semibold text-navy-900">완료 내역</h2>
+          <p className="text-sm text-navy-600">
             종료된 작업 ({logs.length}건). 재작업 시 새로운 세션으로 기록됩니다.
           </p>
         </div>
@@ -89,7 +89,7 @@ export function CompletedList({
 
       {!loading && logs.length === 0 && (
         <div className="card p-8 text-center">
-          <p className="text-sm text-slate-500">완료된 작업이 아직 없습니다.</p>
+          <p className="text-sm text-navy-500">완료된 작업이 아직 없습니다.</p>
         </div>
       )}
 
@@ -98,8 +98,8 @@ export function CompletedList({
           <li key={log.id} className="card p-5">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
-                <p className="text-xs text-slate-500">수험번호</p>
-                <p className="truncate font-mono text-sm font-semibold text-slate-900">
+                <p className="text-xs text-navy-500">수험번호</p>
+                <p className="truncate font-mono text-sm font-semibold text-navy-900">
                   {log.exam_number}
                 </p>
               </div>
@@ -110,38 +110,38 @@ export function CompletedList({
             </div>
 
             {log.task_type === "other" && log.task_type_other_text && (
-              <p className="mt-2 text-sm text-slate-600">
-                <span className="text-slate-500">내용 · </span>
+              <p className="mt-2 text-sm text-navy-600">
+                <span className="text-navy-500">내용 · </span>
                 {log.task_type_other_text}
               </p>
             )}
 
             <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
               <div>
-                <p className="text-xs text-slate-500">담당자</p>
-                <p className="text-slate-900">{log.handler_name}</p>
+                <p className="text-xs text-navy-500">담당자</p>
+                <p className="text-navy-900">{log.handler_name}</p>
               </div>
               <div>
-                <p className="text-xs text-slate-500">소요 시간</p>
-                <p className="font-mono tabular-nums text-slate-900">
+                <p className="text-xs text-navy-500">소요 시간</p>
+                <p className="font-mono tabular-nums text-navy-900">
                   {log.duration_seconds !== null
                     ? formatDuration(log.duration_seconds)
                     : "—"}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-slate-500">시작</p>
-                <p className="text-slate-900">{formatDateTime(log.started_at)}</p>
+                <p className="text-xs text-navy-500">시작</p>
+                <p className="text-navy-900">{formatDateTime(log.started_at)}</p>
               </div>
               <div>
-                <p className="text-xs text-slate-500">종료</p>
-                <p className="text-slate-900">
+                <p className="text-xs text-navy-500">종료</p>
+                <p className="text-navy-900">
                   {log.ended_at ? formatDateTime(log.ended_at) : "—"}
                 </p>
               </div>
             </div>
 
-            <div className="mt-4 flex justify-end border-t border-slate-100 pt-4">
+            <div className="mt-4 flex justify-end border-t border-navy-100 pt-4">
               <button
                 type="button"
                 className="btn-secondary"

@@ -101,8 +101,8 @@ export function StartTaskForm({
 
   return (
     <div className="card p-5 sm:p-6">
-      <h2 className="text-lg font-semibold text-slate-900">업무 시작</h2>
-      <p className="mt-1 text-sm text-slate-600">
+      <h2 className="text-lg font-semibold text-navy-900">업무 시작</h2>
+      <p className="mt-1 text-sm text-navy-600">
         수험번호와 업무를 입력한 뒤 타이머를 시작합니다.
       </p>
 

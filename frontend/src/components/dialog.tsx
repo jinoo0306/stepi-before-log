@@ -20,11 +20,11 @@ export function DialogContent({
 }) {
   return (
     <DialogPrimitive.Portal>
-      <DialogPrimitive.Overlay className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-[1px] animate-fade-in" />
+      <DialogPrimitive.Overlay className="fixed inset-0 z-40 bg-navy-900/40 backdrop-blur-[1px] animate-fade-in" />
       <DialogPrimitive.Content
         className={cn(
           "fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2",
-          "rounded-lg border border-slate-200 bg-white p-5 shadow-xl animate-scale-in",
+          "rounded-lg border border-navy-200 bg-white p-5 shadow-xl animate-scale-in",
           "max-h-[calc(100vh-2rem)] overflow-y-auto",
           className
         )}
@@ -33,7 +33,7 @@ export function DialogContent({
         {showClose && (
           <DialogPrimitive.Close
             aria-label="닫기"
-            className="absolute right-3 top-3 rounded-md p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-900"
+            className="absolute right-3 top-3 rounded-md p-1.5 text-navy-500 hover:bg-navy-100 hover:text-navy-900"
           >
             <X size={16} />
           </DialogPrimitive.Close>
@@ -52,7 +52,7 @@ export function DialogTitle({
 }) {
   return (
     <DialogPrimitive.Title
-      className={cn("text-base font-semibold text-slate-900", className)}
+      className={cn("text-base font-semibold text-navy-900", className)}
     >
       {children}
     </DialogPrimitive.Title>
@@ -68,7 +68,7 @@ export function DialogDescription({
 }) {
   return (
     <DialogPrimitive.Description
-      className={cn("mt-1.5 text-sm text-slate-600", className)}
+      className={cn("mt-1.5 text-sm text-navy-600", className)}
     >
       {children}
     </DialogPrimitive.Description>

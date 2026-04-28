@@ -48,14 +48,17 @@ export default function Page() {
   return (
     <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-10">
       <header className="mb-6 flex items-start justify-between gap-3 sm:mb-8">
-        <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-slate-500">
-            stepi
-          </p>
-          <h1 className="mt-1 text-2xl font-semibold text-slate-900 sm:text-3xl">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="inline-block h-2.5 w-2.5 rounded-full bg-accent-600" aria-hidden />
+            <p className="text-xs font-semibold tracking-wider text-accent-700">
+              STEPI
+            </p>
+          </div>
+          <h1 className="mt-2 text-2xl font-bold tracking-tight text-navy-900 sm:text-[28px]">
             채용 작업 로그
           </h1>
-          <p className="mt-1 text-sm text-slate-600">
+          <p className="mt-1 text-sm text-navy-600">
             수험번호별로 업무 시간을 기록하고 관리합니다.
           </p>
         </div>

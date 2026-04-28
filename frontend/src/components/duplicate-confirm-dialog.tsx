@@ -39,7 +39,7 @@ export function DuplicateConfirmDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent showClose={false}>
         <DialogTitle>중복 작업 확인</DialogTitle>
-        <p className="mt-2 text-sm leading-relaxed text-slate-700">{message}</p>
+        <p className="mt-2 text-sm leading-relaxed text-navy-700">{message}</p>
 
         <div className="mt-5 flex justify-end gap-2">
           <button

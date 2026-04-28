@@ -361,6 +361,26 @@ export const openapiSpec = {
         },
       },
     },
+    "/api/task-logs/{id}": {
+      parameters: [
+        {
+          name: "id",
+          in: "path",
+          required: true,
+          schema: { type: "integer" },
+        },
+      ],
+      delete: {
+        summary: "작업 로그 삭제 (영구)",
+        tags: ["task-logs"],
+        responses: {
+          204: { description: "No Content" },
+          400: { $ref: "#/components/responses/BadRequest" },
+          401: { $ref: "#/components/responses/Unauthorized" },
+          404: { $ref: "#/components/responses/NotFound" },
+        },
+      },
+    },
     "/api/task-logs/{id}/stop": {
       parameters: [
         {
