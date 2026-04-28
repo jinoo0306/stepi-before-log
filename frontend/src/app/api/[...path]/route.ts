@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// 이 프록시는 매 요청마다 backend로 forward해야 한다. Next.js가 정적 최적화/캐싱을
-// 시도하면 POST가 GET으로 처리되는 등의 증상이 나타날 수 있어 명시적으로 막는다.
+// 이 프록시는 매 요청마다 backend로 forward해야 한다. Next.js / Vercel 엣지 캐시가
+// 정적 최적화로 POST를 GET 응답으로 서빙해 버리는 증상이 있어 명시적으로 막는다.
 export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+export const revalidate = 0;
 export const runtime = "nodejs";
 
 const BACKEND_URL = process.env.BACKEND_URL ?? "http://localhost:4000";
@@ -50,6 +52,11 @@ async function proxy(req: NextRequest, ctx: { params: Promise<{ path: string[] }
   const respHeaders = new Headers();
   const upstreamCt = upstream.headers.get("content-type");
   if (upstreamCt) respHeaders.set("content-type", upstreamCt);
+  // Vercel 엣지 / 브라우저 캐시 차단 — 메서드별 응답 다름을 보장.
+  respHeaders.set("cache-control", "private, no-store, max-age=0, must-revalidate");
+  // 빌드/배포 검증용 마커 — 응답에서 이 헤더가 보이면 새 빌드가 라이브.
+  respHeaders.set("x-proxy-method", req.method);
+  respHeaders.set("x-proxy-build", "v3-explicit-methods");
 
   // 204 No Content / 304 Not Modified은 body를 가질 수 없다 — null로 전달.
   if (upstream.status === 204 || upstream.status === 304) {
