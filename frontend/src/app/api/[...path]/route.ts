@@ -20,7 +20,11 @@ async function proxy(req: NextRequest, ctx: { params: Promise<{ path: string[] }
 
   const { path } = await ctx.params;
   const targetPath = `/api/${path.join("/")}`;
-  const search = req.nextUrl.search ?? "";
+  // Vercel Data Cache가 method 무시하고 URL 단위로 GET 응답을 재사용하는 증상이
+  // 관찰됨 → cache-buster query를 붙여 매 요청 URL을 유일하게 만든다.
+  const baseSearch = req.nextUrl.search ?? "";
+  const sep = baseSearch ? "&" : "?";
+  const search = `${baseSearch}${sep}_=${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   const target = `${BACKEND_URL}${targetPath}${search}`;
 
   const headers = new Headers();
@@ -28,10 +32,12 @@ async function proxy(req: NextRequest, ctx: { params: Promise<{ path: string[] }
   if (ct) headers.set("content-type", ct);
   headers.set("x-api-key", API_KEY);
 
-  const init: RequestInit = {
+  // Next.js fetch 옵션 — Data Cache 완전 우회.
+  const init: RequestInit & { next?: { revalidate: number } } = {
     method: req.method,
     headers,
     cache: "no-store",
+    next: { revalidate: 0 },
   };
 
   if (req.method !== "GET" && req.method !== "HEAD") {
@@ -56,7 +62,8 @@ async function proxy(req: NextRequest, ctx: { params: Promise<{ path: string[] }
   respHeaders.set("cache-control", "private, no-store, max-age=0, must-revalidate");
   // 빌드/배포 검증용 마커 — 응답에서 이 헤더가 보이면 새 빌드가 라이브.
   respHeaders.set("x-proxy-method", req.method);
-  respHeaders.set("x-proxy-build", "v3-explicit-methods");
+  respHeaders.set("x-proxy-upstream-status", String(upstream.status));
+  respHeaders.set("x-proxy-build", "v4-no-cache-bust");
 
   // 204 No Content / 304 Not Modified은 body를 가질 수 없다 — null로 전달.
   if (upstream.status === 204 || upstream.status === 304) {
