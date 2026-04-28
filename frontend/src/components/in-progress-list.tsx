@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Square, RefreshCw } from "lucide-react";
+import { Square, RefreshCw, Pause, Play } from "lucide-react";
 import type { TaskLog } from "@/lib/types";
 import { TASK_TYPE_LABELS } from "@/lib/types";
 import { api } from "@/lib/api";
@@ -18,6 +18,7 @@ export function InProgressList({
   const [logs, setLogs] = useState<TaskLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [stoppingId, setStoppingId] = useState<number | null>(null);
+  const [pausingId, setPausingId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const load = async () => {
@@ -48,6 +49,22 @@ export function InProgressList({
       alert(e instanceof Error ? e.message : "종료에 실패했습니다.");
     } finally {
       setStoppingId(null);
+    }
+  };
+
+  const togglePause = async (log: TaskLog) => {
+    setPausingId(log.id);
+    try {
+      if (log.paused_at) {
+        await api.resumeTaskLog(log.id);
+      } else {
+        await api.pauseTaskLog(log.id);
+      }
+      await load();
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "상태 변경에 실패했습니다.");
+    } finally {
+      setPausingId(null);
     }
   };
 
@@ -96,6 +113,7 @@ export function InProgressList({
               <div className="flex flex-col items-end gap-1">
                 <span className="badge-accent">{TASK_TYPE_LABELS[log.task_type]}</span>
                 {log.parent_log_id && <span className="badge">재작업</span>}
+                {log.paused_at && <span className="badge">일시정지</span>}
               </div>
             </div>
 
@@ -119,18 +137,40 @@ export function InProgressList({
 
             <div className="mt-4 flex items-end justify-between gap-3 border-t border-slate-100 pt-4">
               <div>
-                <p className="text-xs text-slate-500">경과</p>
-                <LiveTimer startedAt={log.started_at} />
+                <p className="text-xs text-slate-500">
+                  {log.paused_at ? "경과 (일시정지)" : "경과"}
+                </p>
+                <LiveTimer
+                  startedAt={log.started_at}
+                  pausedAt={log.paused_at}
+                  totalPausedSeconds={log.total_paused_seconds}
+                />
               </div>
-              <button
-                type="button"
-                className="btn-danger"
-                onClick={() => stop(log.id)}
-                disabled={stoppingId === log.id}
-              >
-                <Square size={14} />
-                {stoppingId === log.id ? "종료 중..." : "종료"}
-              </button>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => togglePause(log)}
+                  disabled={pausingId === log.id || stoppingId === log.id}
+                  title={log.paused_at ? "재개" : "일시정지"}
+                >
+                  {log.paused_at ? <Play size={14} /> : <Pause size={14} />}
+                  {pausingId === log.id
+                    ? "처리 중..."
+                    : log.paused_at
+                      ? "재개"
+                      : "일시정지"}
+                </button>
+                <button
+                  type="button"
+                  className="btn-danger"
+                  onClick={() => stop(log.id)}
+                  disabled={stoppingId === log.id || pausingId === log.id}
+                >
+                  <Square size={14} />
+                  {stoppingId === log.id ? "종료 중..." : "종료"}
+                </button>
+              </div>
             </div>
           </li>
         ))}

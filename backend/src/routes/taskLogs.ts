@@ -5,7 +5,9 @@ const router = Router();
 
 const TASK_TYPES = [
   "application_review",
-  "pre_violation_review",
+  "qualification_review",
+  "self_intro_violation_review",
+  "outreach_violation_review",
   "result_organization",
   "other",
 ] as const;
@@ -14,13 +16,19 @@ type TaskType = (typeof TASK_TYPES)[number];
 const isTaskType = (v: unknown): v is TaskType =>
   typeof v === "string" && (TASK_TYPES as readonly string[]).includes(v);
 
+// duration_seconds: 종료된 작업의 실제 작업 시간 = (ended_at - started_at) - 누적 일시정지.
 const SELECT_WITH_HANDLER = `
   SELECT tl.id, tl.exam_number, tl.task_type, tl.task_type_other_text,
          tl.handler_id, h.name AS handler_name,
          tl.parent_log_id, tl.started_at, tl.ended_at,
+         tl.paused_at, tl.total_paused_seconds,
          tl.created_at, tl.updated_at,
          CASE WHEN tl.ended_at IS NOT NULL
-              THEN EXTRACT(EPOCH FROM (tl.ended_at - tl.started_at))::INTEGER
+              THEN GREATEST(
+                EXTRACT(EPOCH FROM (tl.ended_at - tl.started_at))::INTEGER
+                  - tl.total_paused_seconds,
+                0
+              )
               ELSE NULL END AS duration_seconds
     FROM task_logs tl
     JOIN handlers h ON h.id = tl.handler_id
@@ -143,6 +151,7 @@ router.post("/", async (req, res, next) => {
 });
 
 // PATCH /api/task-logs/:id/stop
+// 일시정지 상태였다면 그 구간을 누적에 합치고 paused_at 을 비우면서 종료한다.
 router.patch("/:id/stop", async (req, res, next) => {
   try {
     const id = Number(req.params.id);
@@ -152,13 +161,74 @@ router.patch("/:id/stop", async (req, res, next) => {
     }
     const upd = await pool.query(
       `UPDATE task_logs
-          SET ended_at = NOW()
+          SET ended_at = NOW(),
+              total_paused_seconds = total_paused_seconds
+                + COALESCE(EXTRACT(EPOCH FROM (NOW() - paused_at))::INTEGER, 0),
+              paused_at = NULL
         WHERE id = $1 AND ended_at IS NULL
         RETURNING id`,
       [id]
     );
     if (upd.rowCount === 0) {
       res.status(409).json({ error: "이미 종료되었거나 존재하지 않는 기록입니다." });
+      return;
+    }
+    const r = await pool.query(`${SELECT_WITH_HANDLER} WHERE tl.id = $1`, [id]);
+    res.json(r.rows[0]);
+  } catch (e) {
+    next(e);
+  }
+});
+
+// PATCH /api/task-logs/:id/pause — 진행중이고 일시정지 상태가 아닐 때만 가능
+router.patch("/:id/pause", async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0) {
+      res.status(400).json({ error: "invalid id" });
+      return;
+    }
+    const upd = await pool.query(
+      `UPDATE task_logs
+          SET paused_at = NOW()
+        WHERE id = $1 AND ended_at IS NULL AND paused_at IS NULL
+        RETURNING id`,
+      [id]
+    );
+    if (upd.rowCount === 0) {
+      res
+        .status(409)
+        .json({ error: "이미 종료되었거나 일시정지 상태이거나 존재하지 않는 기록입니다." });
+      return;
+    }
+    const r = await pool.query(`${SELECT_WITH_HANDLER} WHERE tl.id = $1`, [id]);
+    res.json(r.rows[0]);
+  } catch (e) {
+    next(e);
+  }
+});
+
+// PATCH /api/task-logs/:id/resume — 일시정지 구간 길이를 누적에 더하고 paused_at 을 비운다
+router.patch("/:id/resume", async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0) {
+      res.status(400).json({ error: "invalid id" });
+      return;
+    }
+    const upd = await pool.query(
+      `UPDATE task_logs
+          SET total_paused_seconds = total_paused_seconds
+                + EXTRACT(EPOCH FROM (NOW() - paused_at))::INTEGER,
+              paused_at = NULL
+        WHERE id = $1 AND ended_at IS NULL AND paused_at IS NOT NULL
+        RETURNING id`,
+      [id]
+    );
+    if (upd.rowCount === 0) {
+      res
+        .status(409)
+        .json({ error: "일시정지 상태가 아니거나 종료되었거나 존재하지 않는 기록입니다." });
       return;
     }
     const r = await pool.query(`${SELECT_WITH_HANDLER} WHERE tl.id = $1`, [id]);

@@ -12,7 +12,8 @@ Express.js + TypeScript API 서버. Docker 컨테이너로 실행되며 PostgreS
 
 ## 배포 / URL
 
-- **프로덕션**: `https://stepilog.donkey.ai.kr` (예정 — 미배포)
+- **프로덕션**: `https://stepilog.donkey.ai.kr` — 외부 리버스 프록시(nginx)에서 호스트 포트 4000으로 라우팅.
+- **API 문서 (Swagger UI)**: `https://stepilog.donkey.ai.kr/docs` (인증 불필요), OpenAPI JSON은 `/docs.json`.
 - **프론트엔드**: Vercel (`https://stepihr.vercel.app`)에서 호출 → Next.js Route Handler 프록시 → 이 백엔드.
 
 ## 실행
@@ -27,18 +28,18 @@ docker compose up --build
 
 ```bash
 cp .env.example .env
-# .env의 PORT는 22로 설정되어 있는데 로컬에선 SSH 충돌/권한 문제가 있으니
-# 로컬 디버그 시에만 PORT=4000 같은 값으로 덮어쓴다.
-# DATABASE_URL host도 'database' → 'localhost'로.
+# 기본 PORT=4000, DATABASE_URL host는 컨테이너 외부 실행 시 'localhost'로 설정.
 npm install
 npm run dev
 ```
 
 ## 환경 변수
 
-- `PORT` — 서버 포트. 배포 환경에서는 **22** (사용자 지정). 로컬은 4000으로 오버라이드 권장.
-- `DATABASE_URL` — 예: `postgres://stepi:stepi@database:5432/stepi`
-- `API_KEY` — 모든 요청 헤더 `X-API-Key`와 비교, 기본값 `jinoo0306`
+- 도커 기동 시 시크릿은 **저장소 루트 `.env`** 에서 가져온다(`POSTGRES_*`, `API_KEY`). `docker-compose.yml`이 `${VAR:?...}` 형태로 주입하므로 값이 비면 기동 실패. 백엔드 컨테이너 안에서는 아래 변수가 보임:
+  - `PORT` — 서버 포트. 기본 **4000** (컨테이너/호스트 동일, 호스트는 127.0.0.1에만 바인딩).
+  - `DATABASE_URL` — `postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}` 형태로 compose가 만들어 넘긴다.
+  - `API_KEY` — 헤더 `X-API-Key`와 비교.
+- 컨테이너 없이 로컬 디버깅할 때만 `backend/.env`(예시는 `backend/.env.example`)를 따로 둔다 — 그땐 `DATABASE_URL`의 host를 `localhost`로 바꿔야 함.
 
 ## CORS
 
@@ -50,6 +51,13 @@ npm run dev
 - `src/middleware/apiKey.ts` 미들웨어가 모든 `/api/*` 라우트에 적용된다.
 - 헤더 `X-API-Key`가 `process.env.API_KEY`와 일치하지 않으면 `401`.
 - 키 비교는 단순 문자열 비교 (timing attack 방어 미적용 — 사내 도구 수준).
+
+## API 문서 (Swagger)
+
+- `swagger-ui-express`로 `/docs`에 Swagger UI를 띄운다. 스펙은 `src/openapi.ts`(OpenAPI 3.0, 손으로 관리).
+- JSON 스펙은 `/docs.json`에서 받을 수 있다.
+- `/docs`, `/docs.json`은 API 키 미들웨어 앞단에 마운트되어 인증 없이 열람 가능. 실제 호출은 여전히 `X-API-Key` 필요.
+- 라우트 추가/변경 시 `src/openapi.ts`도 함께 수정한다.
 
 ## API 엔드포인트
 

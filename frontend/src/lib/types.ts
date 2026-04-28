@@ -1,12 +1,16 @@
 export type TaskType =
   | "application_review"
-  | "pre_violation_review"
+  | "qualification_review"
+  | "self_intro_violation_review"
+  | "outreach_violation_review"
   | "result_organization"
   | "other";
 
 export const TASK_TYPE_LABELS: Record<TaskType, string> = {
   application_review: "지원서 검토",
-  pre_violation_review: "사전위배 검토",
+  qualification_review: "자격 검토",
+  self_intro_violation_review: "자기소개서 위배 검토",
+  outreach_violation_review: "섭외 위배 검토",
   result_organization: "결과 정리",
   other: "기타",
 };
@@ -28,6 +32,8 @@ export interface TaskLog {
   parent_log_id: number | null;
   started_at: string;
   ended_at: string | null;
+  paused_at: string | null;
+  total_paused_seconds: number;
   created_at: string;
   updated_at: string;
   duration_seconds: number | null;

@@ -12,7 +12,7 @@ Next.js (App Router, TypeScript) 프론트엔드. 호스트 머신에서 직접 
 
 ```bash
 npm install
-cp .env.local.example .env.local
+cp .env.example .env.local   # 로컬 개발용 (Next.js가 자동 로드)
 npm run dev
 ```
 
@@ -28,6 +28,11 @@ npm run dev
 환경 변수 (모두 서버 측 전용 — 클라이언트 번들에 노출되지 않음):
 - `BACKEND_URL` — 로컬: `http://localhost:4000`, 프로덕션: `https://stepilog.donkey.ai.kr`
 - `API_KEY` — 예: `jinoo0306`. Vercel에서는 Project Settings → Environment Variables에 등록.
+
+env 파일 규칙 — frontend/ 안에 세 개:
+- `.env.example` — 키만 있는 템플릿 (커밋 ✅)
+- `.env.local`  — 로컬 개발 시 실제 값 (커밋 ❌, gitignore). Next.js가 자동 로드.
+- `.env.vercel` — Vercel 대시보드에 등록할 값 모음 (커밋 ❌, gitignore, 사람용 메모/가이드. Next.js는 자동 로드 안 함)
 
 ## 배포
 

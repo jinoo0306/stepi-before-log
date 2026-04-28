@@ -9,9 +9,10 @@ build/
 .next/
 out/
 
-# env
+# env (시크릿 포함 — 절대 커밋 금지). 템플릿(.env.example)만 커밋.
 .env
 .env.local
+.env.vercel
 .env.*.local
 
 # database persistent volume

@@ -68,6 +68,10 @@ export const api = {
   }) => call<TaskLog>("/task-logs", { method: "POST", json: input }),
   stopTaskLog: (id: number) =>
     call<TaskLog>(`/task-logs/${id}/stop`, { method: "PATCH" }),
+  pauseTaskLog: (id: number) =>
+    call<TaskLog>(`/task-logs/${id}/pause`, { method: "PATCH" }),
+  resumeTaskLog: (id: number) =>
+    call<TaskLog>(`/task-logs/${id}/resume`, { method: "PATCH" }),
 
   // tables (workbench)
   listTables: () => call<TableInfo[]>("/tables"),

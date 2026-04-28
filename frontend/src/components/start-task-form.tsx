@@ -10,7 +10,9 @@ import { DuplicateConfirmDialog } from "./duplicate-confirm-dialog";
 
 const TASK_TYPES: TaskType[] = [
   "application_review",
-  "pre_violation_review",
+  "qualification_review",
+  "self_intro_violation_review",
+  "outreach_violation_review",
   "result_organization",
   "other",
 ];

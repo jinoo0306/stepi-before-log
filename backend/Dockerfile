@@ -12,5 +12,5 @@ ENV NODE_ENV=production
 COPY package.json package-lock.json* ./
 RUN npm install --omit=dev --no-audit --no-fund
 COPY --from=builder /app/dist ./dist
-EXPOSE 22
+EXPOSE 4000
 CMD ["node", "dist/index.js"]

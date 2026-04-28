@@ -4,16 +4,18 @@ services:
     container_name: stepi-db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: stepi
-      POSTGRES_PASSWORD: stepi
-      POSTGRES_DB: stepi
+      POSTGRES_USER: ${POSTGRES_USER:-stepi}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-stepi}
     ports:
-      - "5432:5432"
+      # 로컬 GUI 툴 접근만 허용. 외부 직노출 차단.
+      - "127.0.0.1:5432:5432"
     volumes:
       - ./database/data:/var/lib/postgresql/data
       - ./database/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U stepi -d stepi"]
+      test:
+        ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-stepi} -d ${POSTGRES_DB:-stepi}"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -28,8 +30,10 @@ services:
       database:
         condition: service_healthy
     environment:
-      PORT: 22
-      DATABASE_URL: postgres://stepi:stepi@database:5432/stepi
-      API_KEY: jinoo0306
+      PORT: 4000
+      DATABASE_URL: postgres://${POSTGRES_USER:-stepi}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@database:5432/${POSTGRES_DB:-stepi}
+      API_KEY: ${API_KEY:?set API_KEY in .env}
     ports:
-      - "22:22"
+      # 같은 호스트의 nginx(stepilog.donkey.ai.kr vhost)에서만 접근.
+      # 외부 직접 노출 금지 — 인증/TLS는 엣지 nginx에서 끝낸다.
+      - "127.0.0.1:4000:4000"
