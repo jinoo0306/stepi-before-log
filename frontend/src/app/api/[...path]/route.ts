@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// 이 프록시는 매 요청마다 backend로 forward해야 한다. Next.js가 정적 최적화/캐싱을
+// 시도하면 POST가 GET으로 처리되는 등의 증상이 나타날 수 있어 명시적으로 막는다.
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 const BACKEND_URL = process.env.BACKEND_URL ?? "http://localhost:4000";
 const API_KEY = process.env.API_KEY ?? "";
 
