@@ -66,8 +66,22 @@ async function proxy(req: NextRequest, ctx: { params: Promise<{ path: string[] }
   });
 }
 
-export const GET = proxy;
-export const POST = proxy;
-export const PATCH = proxy;
-export const PUT = proxy;
-export const DELETE = proxy;
+// 각 메서드를 별도 export 함수로 둔다.
+// Next.js 15 + Vercel 빌드에서 같은 함수 참조를 여러 메서드 export로 재사용하면
+// POST가 GET으로 처리되는 증상이 관찰됨 → 메서드별 wrapper로 회피.
+type Ctx = { params: Promise<{ path: string[] }> };
+export async function GET(req: NextRequest, ctx: Ctx) {
+  return proxy(req, ctx);
+}
+export async function POST(req: NextRequest, ctx: Ctx) {
+  return proxy(req, ctx);
+}
+export async function PATCH(req: NextRequest, ctx: Ctx) {
+  return proxy(req, ctx);
+}
+export async function PUT(req: NextRequest, ctx: Ctx) {
+  return proxy(req, ctx);
+}
+export async function DELETE(req: NextRequest, ctx: Ctx) {
+  return proxy(req, ctx);
+}
