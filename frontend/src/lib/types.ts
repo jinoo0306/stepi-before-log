@@ -8,9 +8,9 @@ export type TaskType =
 
 export const TASK_TYPE_LABELS: Record<TaskType, string> = {
   application_review: "지원서 검토",
-  qualification_review: "자격 검토",
-  self_intro_violation_review: "자기소개서 위배 검토",
-  outreach_violation_review: "섭외 위배 검토",
+  qualification_review: "[사전 위배 검토] 자격 검토",
+  self_intro_violation_review: "[사전 위배 검토] 자기소개서 위배 검토",
+  outreach_violation_review: "[사전 위배 검토] 섭외 위배 검토",
   result_organization: "결과 정리",
   other: "기타",
 };
