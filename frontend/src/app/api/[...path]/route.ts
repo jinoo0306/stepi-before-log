@@ -32,22 +32,25 @@ async function proxy(req: NextRequest, ctx: { params: Promise<{ path: string[] }
   if (ct) headers.set("content-type", ct);
   headers.set("x-api-key", API_KEY);
 
-  // Next.js fetch 옵션 — Data Cache 완전 우회.
-  const init: RequestInit & { next?: { revalidate: number } } = {
-    method: req.method,
-    headers,
-    cache: "no-store",
-    next: { revalidate: 0 },
-  };
-
+  // body는 GET/HEAD가 아닐 때만 읽는다.
+  let upstreamBody: ArrayBuffer | undefined;
   if (req.method !== "GET" && req.method !== "HEAD") {
     const buf = await req.arrayBuffer();
-    if (buf.byteLength > 0) init.body = buf;
+    if (buf.byteLength > 0) upstreamBody = buf;
   }
+
+  // Vercel의 fetch가 RequestInit 의 method 를 잃는 증상을 회피하기 위해
+  // 명시적으로 Request 객체를 만들어 전달한다.
+  const upstreamReq = new Request(target, {
+    method: req.method,
+    headers,
+    body: upstreamBody,
+    cache: "no-store",
+  });
 
   let upstream: Response;
   try {
-    upstream = await fetch(target, init);
+    upstream = await fetch(upstreamReq);
   } catch (e) {
     return NextResponse.json(
       { error: "backend 연결에 실패했습니다." },
@@ -63,7 +66,7 @@ async function proxy(req: NextRequest, ctx: { params: Promise<{ path: string[] }
   // 빌드/배포 검증용 마커 — 응답에서 이 헤더가 보이면 새 빌드가 라이브.
   respHeaders.set("x-proxy-method", req.method);
   respHeaders.set("x-proxy-upstream-status", String(upstream.status));
-  respHeaders.set("x-proxy-build", "v4-no-cache-bust");
+  respHeaders.set("x-proxy-build", "v5-explicit-request");
 
   // 204 No Content / 304 Not Modified은 body를 가질 수 없다 — null로 전달.
   if (upstream.status === 204 || upstream.status === 304) {
