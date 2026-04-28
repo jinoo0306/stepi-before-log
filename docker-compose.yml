@@ -1,0 +1,35 @@
+services:
+  database:
+    image: postgres:16-alpine
+    container_name: stepi-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: stepi
+      POSTGRES_PASSWORD: stepi
+      POSTGRES_DB: stepi
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./database/data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stepi -d stepi"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: stepi-api
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      PORT: 22
+      DATABASE_URL: postgres://stepi:stepi@database:5432/stepi
+      API_KEY: jinoo0306
+    ports:
+      - "22:22"
